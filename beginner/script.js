@@ -1,6 +1,6 @@
 // ==========================================
 // ★ここにGASのウェブアプリURLを貼り付けてください
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwpL4CTO6FEJex1Ka1CjfGAtyEPsWCqA9R3uC6r6pG8uMTO8zhMOopRBliVeEJYT6neaw/exec'; 
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
 // 要素の取得
@@ -28,7 +28,8 @@ let touchEndX = 0;
 // --- 1. データ取得と初期化 ---
 async function initApp() {
     try {
-        const response = await fetch(GAS_API_URL);
+        //const response = await fetch(GAS_API_URL);
+        const response = await fetch(`${GAS_API_URL}?type=beginner`);
         const data = await response.json();
         
         if (data.error) throw new Error(data.error);
