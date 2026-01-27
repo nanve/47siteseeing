@@ -7,24 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="auth-overlay" style="
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #333; z-index: 9999;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: white; text-align: center; padding: 20px; box-sizing: border-box;">
+<div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #333; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; box-sizing: border-box;">
     <h2 style="margin-bottom: 10px;">Member Only</h2>
     <p style="margin-bottom: 20px; font-size: 0.9rem; color: #ccc;">
         これより先は会員限定エリアです。<br>購入時に発行されたパスワードを入力してください。
     </p>
-    <input type="password" id="auth-password" placeholder="Password" style="
-        padding: 10px; border-radius: 5px; border: none; margin-bottom: 15px; width: 80%; max-width: 300px;    ">
-    <button onclick="authenticateUser()" style="
-        padding: 10px 30px; border-radius: 25px; border: none; 
-        background: #fff; color: #333; font-weight: bold; cursor: pointer;">ENTER</button>
+    <input type="password" id="auth-password" placeholder="Password" style="padding: 10px; border-radius: 5px; border: none; margin-bottom: 15px; width: 80%; max-width: 300px;">
+    <button onclick="authenticateUser()" style="padding: 10px 30px; border-radius: 25px; border: none; background: #fff; color: #333; font-weight: bold; cursor: pointer;">ENTER</button>
     <p id="auth-error" style="color: #ff6b6b; margin-top: 15px; font-size: 0.8rem; height: 1em;"></p>
     
     <a href="../index.html" style="margin-top: 30px; color: #888; text-decoration: none; font-size: 0.8rem;">&lt; Back to Top</a>
-    </div>
+</div>
 
     <div class="container">
         <header class="app-header">
