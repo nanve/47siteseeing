@@ -3,6 +3,9 @@
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
+// ★上級用の設定 (ここが 'veteran' になっていることが重要)
+const AUTH_TYPE = 'veteran';
+
 const buttonGrid = document.querySelector('.button-grid');
 const prevButton = document.getElementById('prev-page');
 const nextButton = document.getElementById('next-page');
@@ -23,18 +26,53 @@ let currentItem = null;
 let touchStartX = 0;
 let touchEndX = 0;
 
-async function initApp() {
+// ▼▼▼ 1. 認証機能 (ここを追加しました) ▼▼▼
+document.addEventListener('DOMContentLoaded', () => {
+    // 以前ログイン済みかチェック
+    const savedKey = localStorage.getItem(`site_auth_${AUTH_TYPE}`);
+    if (savedKey) {
+        document.getElementById('auth-password').value = savedKey;
+        authenticateUser(); // 自動ログイン試行
+    }
+});
+
+async function authenticateUser() {
+    const inputKey = document.getElementById('auth-password').value;
+    const errorMsg = document.getElementById('auth-error');
+    const overlay = document.getElementById('auth-overlay');
+
+    if (!inputKey) {
+        errorMsg.textContent = "パスワードを入力してください";
+        return;
+    }
+
+    errorMsg.textContent = "認証中...";
+    
     try {
-        const response = await fetch(GAS_API_URL);
+        // GASにパスワードを送る (type=veteran)
+        const url = `${GAS_API_URL}?type=${AUTH_TYPE}&key=${encodeURIComponent(inputKey)}`;
+        const response = await fetch(url);
         const data = await response.json();
-        if (data.error) throw new Error(data.error);
-        allData = data;
-        renderButtons();
-    } catch (error) {
-        console.error('Error:', error);
-        buttonGrid.innerHTML = '<p style="padding:20px; text-align:center;">データの読み込みに失敗しました。</p>';
+
+        if (data.error === "AuthFailed") {
+            errorMsg.textContent = "パスワードが違います。";
+            localStorage.removeItem(`site_auth_${AUTH_TYPE}`); 
+        } else if (data.error) {
+            throw new Error(data.error);
+        } else {
+            // 成功！
+            localStorage.setItem(`site_auth_${AUTH_TYPE}`, inputKey);
+            overlay.style.display = 'none'; // ロック画面を消す
+            
+            allData = data;
+            renderButtons(); // ボタン一覧を描画
+        }
+    } catch (e) {
+        console.error(e);
+        errorMsg.textContent = "通信エラーが発生しました。";
     }
 }
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 function renderButtons() {
     buttonGrid.innerHTML = '';
@@ -121,7 +159,6 @@ function renderModalContent() {
     document.getElementById('modal-image').src = item.ImageUrl;
 
     // --- ★1. キーワードクラウドの生成 (1~5) ---
-    // カラム名例: N_Keyword_1_JP, A_Keyword_1_EN
     const keywordsContainer = document.getElementById('modal-keywords');
     keywordsContainer.innerHTML = ''; // クリア
     keywordsContainer.classList.toggle('ara-mode', spirit === 'A'); // 色変え用クラス
@@ -138,24 +175,8 @@ function renderModalContent() {
     }
 
     // --- ★2. メタデータの表示 ---
-    // カラム名例: N_Colors, A_Elements (言語区別なしのカラムか、_JPがあるか要確認)
-    // リストによると "N_Colors", "N_Elements" 等は末尾に _JP / _EN がないように見えますが
-    // 最初のプロンプトのリストを確認すると...
-    // "N_Colors", "N_Elements" ... となっています（言語サフィックスが無いように見える）。
-    // もし言語別なら "N_Colors_JP" となるはずですが、一旦そのまま取得してみます。
-    // 多言語対応が必要な場合、値自体が "Red / 赤" のようになっているか、カラム名ミスの可能性があります。
-    // ここではリスト通り、サフィックスなしで取得しますが、もし表示されない場合は _JP を足してください。
-    // ※ 最初のリストには "N_Elements" とあり、_JPの記載がないため、共通カラムと仮定します。
-    // しかし、通常は翻訳が必要です。ここでは仮にそのまま表示します。
-
     function getMeta(baseKey) {
-        // もしデータに _JP / _EN がある場合のフォールバックロジック
-        // まずそのまま試す
         if (item[baseKey]) return item[baseKey];
-        // ダメなら言語サフィックスをつけてみる (念のため)
-        /* 注: 最初のリストでは "N_Colors" 等はサフィックス無しでした。
-           ただし、実データが日本語のみの場合はそのまま表示されます。
-        */
         return '-';
     }
 
@@ -168,13 +189,12 @@ function renderModalContent() {
 
 
     // --- ★3. 詳細解釈 (V_N_... / V_A_...) ---
-    // カラム例: V_N_General_JP, V_A_Interp_Work_EN
     const keyGen    = `V_${spirit}_General${langSuffix}`;
     const keyWork   = `V_${spirit}_Interp_Work${langSuffix}`;
     const keyLove   = `V_${spirit}_Interp_Love${langSuffix}`;
     const keyMoney  = `V_${spirit}_Interp_Money${langSuffix}`;
     const keyHealth = `V_${spirit}_Interp_Health${langSuffix}`;
-    const keyCore   = `V_${spirit}_5${langSuffix}`; // 御神勅 (V_N_5_JP 等)
+    const keyCore   = `V_${spirit}_5${langSuffix}`; 
 
     document.getElementById('modal-v-general').textContent = item[keyGen] || '-';
     document.getElementById('modal-work').textContent      = item[keyWork] || '-';
@@ -242,4 +262,5 @@ document.addEventListener('touchend', e => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', initApp);
+// ※重要：initAppの自動呼び出しは削除しました
+// document.addEventListener('DOMContentLoaded', initApp); <-- これは不要

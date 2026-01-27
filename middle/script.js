@@ -3,6 +3,9 @@
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
+// ★中級用の設定
+const AUTH_TYPE = 'middle';
+
 // 要素の取得
 const buttonGrid = document.querySelector('.button-grid');
 const prevButton = document.getElementById('prev-page');
@@ -27,21 +30,53 @@ let currentItem = null;  // 現在開いているアイテム
 let touchStartX = 0;
 let touchEndX = 0;
 
-// --- 1. データ取得と初期化 ---
-async function initApp() {
+// ▼▼▼ 1. 認証機能 (ここを追加しました) ▼▼▼
+document.addEventListener('DOMContentLoaded', () => {
+    // 以前ログイン済みかチェック
+    const savedKey = localStorage.getItem(`site_auth_${AUTH_TYPE}`);
+    if (savedKey) {
+        document.getElementById('auth-password').value = savedKey;
+        authenticateUser(); // 自動ログイン試行
+    }
+});
+
+async function authenticateUser() {
+    const inputKey = document.getElementById('auth-password').value;
+    const errorMsg = document.getElementById('auth-error');
+    const overlay = document.getElementById('auth-overlay');
+
+    if (!inputKey) {
+        errorMsg.textContent = "パスワードを入力してください";
+        return;
+    }
+
+    errorMsg.textContent = "認証中...";
+    
     try {
-        const response = await fetch(GAS_API_URL);
+        // GASにパスワードを送る
+        const url = `${GAS_API_URL}?type=${AUTH_TYPE}&key=${encodeURIComponent(inputKey)}`;
+        const response = await fetch(url);
         const data = await response.json();
-        
-        if (data.error) throw new Error(data.error);
-        
-        allData = data;
-        renderButtons(); 
-    } catch (error) {
-        console.error('Error:', error);
-        buttonGrid.innerHTML = '<p style="padding:20px; text-align:center;">データの読み込みに失敗しました。</p>';
+
+        if (data.error === "AuthFailed") {
+            errorMsg.textContent = "パスワードが違います。";
+            localStorage.removeItem(`site_auth_${AUTH_TYPE}`); 
+        } else if (data.error) {
+            throw new Error(data.error);
+        } else {
+            // 成功！
+            localStorage.setItem(`site_auth_${AUTH_TYPE}`, inputKey);
+            overlay.style.display = 'none'; // ロック画面を消す
+            
+            allData = data;
+            renderButtons(); // ボタン一覧を描画
+        }
+    } catch (e) {
+        console.error(e);
+        errorMsg.textContent = "通信エラーが発生しました。";
     }
 }
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 // --- 2. ボタン一覧の描画 (共通) ---
 function renderButtons() {
@@ -235,5 +270,5 @@ function handleSwipe() {
     }
 }
 
-// アプリ開始
-document.addEventListener('DOMContentLoaded', initApp);
+// ※重要：initAppの自動呼び出しは削除しました
+// document.addEventListener('DOMContentLoaded', initApp); <-- これは不要
