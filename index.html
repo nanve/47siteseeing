@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>47Siteseeing Oracle Card</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .menu-card {
+            display: block;
+            text-decoration: none;
+            padding: 20px;
+            border-radius: 15px;
+            color: #fff;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .menu-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        .menu-card h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .menu-card p {
+            margin: 5px 0 0;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 各レベルのカラー設定 */
+        .beginner {
+            background: linear-gradient(135deg, #7eff00 0%, #4caf50 100%);
+        }
+        .middle {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+        .veteran {
+            background: linear-gradient(135deg, #673AB7 0%, #4527a0 100%);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>47Siteseeing Oracle</h1>
+        <p class="subtitle">Select Your Level / レベルを選択</p>
+
+        <div class="menu-grid">
+            <a href="./beginner/" class="menu-card beginner">
+                <h2>Beginner</h2>
+                <p>初心者</p>
+            </a>
+
+            <a href="./middle/" class="menu-card middle">
+                <h2>Middle</h2>
+                <p>中級者・和魂/荒魂</p>
+            </a>
+
+            <a href="./veteran/" class="menu-card veteran">
+                <h2>Veteran</h2>
+                <p>上級者・全属性開示</p>
+            </a>
+        </div>
+
+        <footer>
+            &copy; 2026 47Siteseeing Oracle Cards
+        </footer>
+    </div>
+
+</body>
+</html>

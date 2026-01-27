@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>47Siteseeing Card (Veteran)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">47Siteseeing Card</h1>
+                <p class="app-subtitle">Veteran Edition</p>
+            </div>
+            
+            <div class="language-switcher">
+                <button id="lang-jp" class="active">JP</button>
+                <button id="lang-en">EN</button>
+            </div>
+        </header>
+
+        <div class="button-grid"></div>
+        
+        <nav class="pagination">
+            <button id="prev-page" disabled>&lt; Prev</button>
+            <span id="page-info"></span>
+            <button id="next-page" disabled>Next &gt;</button>
+        </nav>
+
+        <footer class="app-footer">
+            <p>&copy; 2025 47Siteseeing Card. All Rights Reserved.</p>
+            <p class="copyright-notice">当サイトの画像・文章の無断転載を禁じます。</p>
+        </footer>
+    </div>
+
+    <div id="detail-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="modal-body">
+                
+                <div class="spirit-switcher-container">
+                    <div class="spirit-switcher">
+                        <button id="spirit-n" class="active" onclick="switchSpirit('N')">和魂 (N)</button>
+                        <button id="spirit-a" onclick="switchSpirit('A')">荒魂 (A)</button>
+                    </div>
+                    <p id="spirit-desc-text" class="spirit-note">調和・平穏</p>
+                </div>
+
+                <h2 id="modal-title"></h2>
+                
+                <div class="image-container">
+                    <img id="modal-image" src="" alt="">
+                </div>
+                
+                <div class="keywords-container">
+                    <p class="keywords-label">Keywords</p>
+                    <div id="modal-keywords" class="keywords-list">
+                        </div>
+                </div>
+
+                <div class="metadata-box">
+                    <h3 id="label-attributes">神性属性データ</h3>
+                    <div class="metadata-grid">
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-color">色</span>
+                            <span class="meta-value" id="modal-meta-color"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-element">五行</span>
+                            <span class="meta-value" id="modal-meta-element"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-season">季節</span>
+                            <span class="meta-value" id="modal-meta-season"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-time">時間</span>
+                            <span class="meta-value" id="modal-meta-time"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-direction">方位</span>
+                            <span class="meta-value" id="modal-meta-direction"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label" id="label-number">数霊</span>
+                            <span class="meta-value" id="modal-meta-number"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section prediction-box">
+                    <h3 id="label-prediction">神託（General）</h3>
+                    <p id="modal-v-general"></p>
+                </div>
+
+                <div class="section detail-box">
+                    <h3 id="label-detail">詳細解釈</h3>
+                    
+                    <div class="detail-row">
+                        <span class="detail-icon">🏢</span>
+                        <div class="detail-content">
+                            <strong id="label-work">仕事</strong>
+                            <p id="modal-work"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">💖</span>
+                        <div class="detail-content">
+                            <strong id="label-love">恋愛</strong>
+                            <p id="modal-love"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">💰</span>
+                        <div class="detail-content">
+                            <strong id="label-money">金運</strong>
+                            <p id="modal-money"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">🏥</span>
+                        <div class="detail-content">
+                            <strong id="label-health">健康</strong>
+                            <p id="modal-health"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section core-message-box">
+                    <h3 id="label-core-message">御神勅 (Core Message)</h3>
+                    <p id="modal-v-5" class="highlight-text"></p>
+                </div>
+
+                <div class="section link-box">
+                    <h3 id="label-location">聖地・所在地</h3>
+                    <div class="location-container">
+                        <div class="location-item">
+                            <span class="location-label" id="label-prefecture">都道府県：</span>
+                            <span id="modal-prefecture"></span>
+                        </div>
+                        <div class="location-item">
+                            <span class="location-label" id="label-holysite">聖地：</span>
+                            <a id="modal-holysite-link" href="" target="_blank" rel="noopener noreferrer"></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

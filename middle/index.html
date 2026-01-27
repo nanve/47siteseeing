@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>47Siteseeing Card (Middle)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">47Siteseeing Card</h1>
+                <p class="app-subtitle">Middle Edition</p>
+            </div>
+            
+            <div class="language-switcher">
+                <button id="lang-jp" class="active">JP</button>
+                <button id="lang-en">EN</button>
+            </div>
+        </header>
+
+        <div class="button-grid"></div>
+        
+        <nav class="pagination">
+            <button id="prev-page" disabled>&lt; Prev</button>
+            <span id="page-info"></span>
+            <button id="next-page" disabled>Next &gt;</button>
+        </nav>
+
+        <footer class="app-footer">
+            <p>&copy; 2025 47Siteseeing Card. All Rights Reserved.</p>
+            <p class="copyright-notice">当サイトの画像・文章の無断転載を禁じます。</p>
+        </footer>
+    </div>
+
+    <div id="detail-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="modal-body">
+                
+                <div class="spirit-switcher-container">
+                    <div class="spirit-switcher">
+                        <button id="spirit-n" class="active" onclick="switchSpirit('N')">和魂 (N)</button>
+                        <button id="spirit-a" onclick="switchSpirit('A')">荒魂 (A)</button>
+                    </div>
+                    <p id="spirit-desc-text" class="spirit-note">穏やかな働き・調和</p>
+                </div>
+
+                <h2 id="modal-title"></h2>
+                
+                <div class="image-container">
+                    <img id="modal-image" src="" alt="">
+                </div>
+                
+                <div class="attributes-grid">
+                    <span id="modal-no" class="tag"></span>
+                    <span id="modal-element" class="tag"></span>
+                    <span id="modal-direction" class="tag"></span>
+                </div>
+
+                <div class="section">
+                    <h3 id="label-desc">ご由緒</h3>
+                    <p id="modal-desc"></p>
+                </div>
+
+                <div class="section prediction-box">
+                    <h3 id="label-prediction">ささやき</h3>
+                    <p id="modal-m-general"></p>
+                </div>
+
+                <div class="section detail-box">
+                    <h3 id="label-detail">運勢詳細</h3>
+                    
+                    <div class="detail-row">
+                        <span class="detail-icon">🏢</span>
+                        <div class="detail-content">
+                            <strong id="label-work">仕事</strong>
+                            <p id="modal-work"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">💖</span>
+                        <div class="detail-content">
+                            <strong id="label-love">恋愛</strong>
+                            <p id="modal-love"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">💰</span>
+                        <div class="detail-content">
+                            <strong id="label-money">金運</strong>
+                            <p id="modal-money"></p>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-icon">🏥</span>
+                        <div class="detail-content">
+                            <strong id="label-health">健康</strong>
+                            <p id="modal-health"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section advice-box">
+                    <h3 id="label-advice">示唆の言葉</h3>
+                    <p id="modal-m-s" class="highlight-text"></p>
+                </div>
+
+                <div class="section link-box">
+                    <h3 id="label-location">聖地・所在地</h3>
+                    <div class="location-container">
+                        <div class="location-item">
+                            <span class="location-label" id="label-prefecture">都道府県：</span>
+                            <span id="modal-prefecture"></span>
+                        </div>
+                        <div class="location-item">
+                            <span class="location-label" id="label-holysite">聖地：</span>
+                            <a id="modal-holysite-link" href="" target="_blank" rel="noopener noreferrer"></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

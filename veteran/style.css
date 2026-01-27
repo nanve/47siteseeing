@@ -1,0 +1,437 @@
+/* --- 全体の設定 --- */
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3e5f5; /* 薄い紫背景 */
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 固定ヘッダー (紫) --- */
+.app-header {
+    background-color: #673AB7; /* Deep Purple */
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    border-bottom: 1px solid #512da8;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #e1bee7;
+    margin-top: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* 言語切替ボタン */
+.language-switcher button {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 10px;
+    margin-left: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.language-switcher button.active {
+    background: #fff;
+    color: #673AB7;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- ボタン一覧 --- */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    justify-items: center;
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.app-button {
+    background: #fff;
+    width: 100%;
+    aspect-ratio: 1 / 0.8; 
+    border-radius: 10px; /* 少し角を鋭角に */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 6px 2px 2px 2px;
+    box-sizing: border-box;
+    overflow: hidden; 
+    border: 1px solid #d1c4e9;
+}
+
+.app-button:active {
+    transform: scale(0.96);
+}
+
+.app-button img {
+    width: auto;
+    height: 80%;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-bottom: 2px;
+}
+
+.app-button p {
+    font-size: 0.7rem; 
+    margin: 0;
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    padding: 0 4px;
+    color: #512da8;
+}
+
+/* --- ページネーション --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    gap: 20px;
+    padding-bottom: 20px;
+}
+
+.pagination button {
+    background: #512da8;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px; /* 上級者向けに少しシックに */
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.pagination button:disabled {
+    background: #b39ddb;
+    cursor: not-allowed;
+}
+
+/* --- 詳細画面（モーダル） --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(20, 0, 40, 0.7); /* 暗めの紫マスク */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.modal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 600px;
+    height: 95vh; /* ほぼ全画面 */
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    position: relative;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.modal:not(.hidden) .modal-content {
+    transform: translateY(0);
+}
+
+.close-button {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 30px;
+    color: #aaa;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* スイッチャー */
+.spirit-switcher-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.spirit-switcher {
+    display: inline-flex;
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.spirit-switcher button {
+    border: none;
+    background: transparent;
+    padding: 8px 25px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+    transition: all 0.3s;
+}
+.spirit-switcher button.active {
+    background: #673AB7;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.spirit-switcher button#spirit-a.active {
+    background: #C2185B; /* 荒魂は赤紫 */
+}
+.spirit-note {
+    font-size: 0.7rem;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* コンテンツ */
+#modal-title {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+    color: #4527a0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.image-container {
+    text-align: center;
+    margin: 10px 0;
+}
+#modal-image {
+    max-height: 200px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ★上級者：キーワードエリア */
+.keywords-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.keywords-label {
+    font-size: 0.7rem;
+    color: #999;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+.keyword-tag {
+    background-color: #ede7f6;
+    color: #512da8;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid #d1c4e9;
+}
+/* 荒魂時のキーワード色変更 */
+.keywords-list.ara-mode .keyword-tag {
+    background-color: #fce4ec;
+    color: #c2185b;
+    border-color: #f8bbd0;
+}
+
+/* ★上級者：メタデータテーブル */
+.metadata-box {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.metadata-box h3 {
+    margin: 0;
+    background: #f5f5f5;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    color: #555;
+    border-bottom: 1px solid #e0e0e0;
+}
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2列表示 */
+    gap: 0; 
+}
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+}
+.meta-item:nth-child(2n) {
+    border-right: none;
+}
+.meta-label {
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 2px;
+}
+.meta-value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* セクション設定 */
+.section {
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+.section h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #311b92;
+    border-left: 4px solid #673AB7;
+    padding-left: 10px;
+}
+
+.prediction-box {
+    background: #f3e5f5;
+    padding: 15px;
+    border-radius: 8px;
+    color: #4a148c;
+}
+
+.detail-box {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.detail-row {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #ddd;
+    display: flex;
+}
+.detail-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.detail-icon {
+    font-size: 1.2rem;
+    margin-right: 12px;
+}
+.detail-content strong {
+    display: block;
+    font-size: 0.8rem;
+    color: #7e57c2;
+    margin-bottom: 4px;
+}
+
+/* コアメッセージ */
+.core-message-box {
+    background: linear-gradient(135deg, #ede7f6 0%, #fff 100%);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #d1c4e9;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(103, 58, 183, 0.1);
+}
+.core-message-box h3 {
+    text-align: left;
+}
+.highlight-text {
+    font-weight: bold;
+    color: #4a148c;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* 聖地エリア */
+.link-box {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+.location-item {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+.location-label {
+    font-weight: bold;
+    color: #777;
+    margin-right: 5px;
+}
+#modal-holysite-link {
+    color: #673AB7;
+    text-decoration: none;
+    font-weight: bold;
+}
+.no-link { color: #333 !important; pointer-events: none; }
+
+/* フッター */
+.app-footer {
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    margin-top: auto;
+    background-color: #f3e5f5;
+}
+.app-footer p {
+    margin: 5px 0;
+    font-size: 0.7rem;
+    color: #7e57c2;
+}
+.copyright-notice { font-size: 0.6rem !important; color: #999 !important; }
