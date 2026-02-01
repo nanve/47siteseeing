@@ -13,7 +13,6 @@
                 <h1 class="app-title">47Siteseeing Card</h1>
                 <p class="app-subtitle">Beginner Edition</p>
             </div>
-            
             <div class="language-switcher">
                 <button id="lang-jp" class="active">JP</button>
                 <button id="lang-en">EN</button>
@@ -44,10 +43,27 @@
                     <img id="modal-image" src="" alt="">
                 </div>
                 
-                <div class="attributes-grid">
-                    <span id="modal-no" class="tag"></span>
-                    <span id="modal-element" class="tag"></span>
-                    <span id="modal-direction" class="tag"></span>
+                <div class="attributes-box">
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-no">No.</span>
+                        <span class="attr-value" id="modal-no"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-element">五行</span>
+                        <span class="attr-value" id="modal-element"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-color">色</span>
+                        <span class="attr-value" id="modal-color"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-direction">方位</span>
+                        <span class="attr-value" id="modal-direction"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-number">数霊</span>
+                        <span class="attr-value" id="modal-number"></span>
+                    </div>
                 </div>
 
                 <div class="section">
@@ -62,7 +78,6 @@
 
                 <div class="section detail-box">
                     <h3 id="label-detail">仕事・恋愛・金運</h3>
-                    
                     <div class="detail-row">
                         <span class="detail-icon">🏢</span>
                         <div class="detail-content">
@@ -70,7 +85,6 @@
                             <p id="modal-work"></p>
                         </div>
                     </div>
-
                     <div class="detail-row">
                         <span class="detail-icon">💖</span>
                         <div class="detail-content">
@@ -78,7 +92,6 @@
                             <p id="modal-love"></p>
                         </div>
                     </div>
-
                     <div class="detail-row">
                         <span class="detail-icon">💰</span>
                         <div class="detail-content">
@@ -94,7 +107,7 @@
                 </div>
 
                 <div class="section link-box">
-                    <h3 id="label-location">所在地・聖地</h3>
+                    <h3 id="label-location">聖地・所在地</h3>
                     <div class="location-container">
                         <div class="location-item">
                             <span class="location-label" id="label-prefecture">都道府県：</span>

@@ -88,11 +88,10 @@ nextButton.onclick = () => {
     if (currentPage < totalPages) { currentPage++; renderButtons(); window.scrollTo(0,0); }
 };
 
-// --- 4. 詳細モーダル表示 ---
 function openModal(item) {
     const isJP = currentLanguage === 'JP';
     
-    // ▼▼▼ 見出し（タイトル）の言語切り替え ▼▼▼
+    // ▼▼▼ ラベル設定（色・数・五行を追加） ▼▼▼
     document.getElementById('label-desc').textContent       = isJP ? 'どんな方' : 'Profile';
     document.getElementById('label-prediction').textContent = isJP ? 'ささやき' : 'Whisper';
     document.getElementById('label-detail').textContent     = isJP ? '仕事・恋愛・金運' : 'Work, Love, Money';
@@ -100,58 +99,58 @@ function openModal(item) {
     document.getElementById('label-love').textContent       = isJP ? '恋愛' : 'Love';
     document.getElementById('label-money').textContent      = isJP ? '金運' : 'Money';
     document.getElementById('label-advice').textContent     = isJP ? '示唆の言葉' : 'Advice';
-    
-    // ★追加: 聖地エリアの見出し切り替え
     document.getElementById('label-location').textContent   = isJP ? '聖地・所在地' : 'Holy Site & Location';
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
     document.getElementById('label-holysite').textContent   = isJP ? '聖地：' : 'Holy Site:';
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+    // ★追加属性ラベル
+    document.getElementById('label-no').textContent        = 'No.';
+    document.getElementById('label-element').textContent   = isJP ? '五行' : 'Element';
+    document.getElementById('label-color').textContent     = isJP ? '色' : 'Color';
+    document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
+    document.getElementById('label-number').textContent    = isJP ? '数霊' : 'Number';
 
     // 基本情報
     document.getElementById('modal-title').textContent = isJP ? item.Name_JP : item.Name_EN;
     document.getElementById('modal-image').src = item.ImageUrl;
-    document.getElementById('modal-no').textContent = `No.${item.No}`;
+    document.getElementById('modal-no').textContent = item.No; // Noだけシンプルに表示
     
-    // 属性 (共通)
-    document.getElementById('modal-element').textContent = item.Elements || '-';
-    document.getElementById('modal-direction').textContent = item.Direction || '-';
+    // ★属性データの取得 (初級は N_ 固定)
+    // データがない場合はハイフン
+    document.getElementById('modal-element').textContent   = item.N_Elements || '-';
+    document.getElementById('modal-color').textContent     = item.N_Colors || '-';
+    document.getElementById('modal-direction').textContent = item.N_Direction || '-';
+    document.getElementById('modal-number').textContent    = item.N_Numbers || '-';
 
-    // 1. どんな方 (御真言)
+    // 1. どんな方
     document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
     
-    // 2. ささやき (General)
+    // 2. ささやき
     document.getElementById('modal-b-general').textContent = isJP ? item.B_General_JP : item.B_General_EN;
     
-    // 3. 仕事・恋愛・金運
+    // 3. 詳細
     document.getElementById('modal-work').textContent = isJP ? item.B_Interp_Work_JP : item.B_Interp_Work_EN;
     document.getElementById('modal-love').textContent = isJP ? item.B_Interp_Love_JP : item.B_Interp_Love_EN;
     document.getElementById('modal-money').textContent = isJP ? item.B_Interp_Money_JP : item.B_Interp_Money_EN;
 
-    // 4. 示唆の言葉 (CDN)
+    // 4. 示唆
     document.getElementById('modal-b-cdn').textContent = isJP ? item.B_CDN_JP : item.B_CDN_EN;
 
-    // ▼▼▼ ★追加: 聖地・リンク情報の表示処理 ▼▼▼
+    // 聖地
     const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
-
-    // 都道府県の表示
     prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
-
-    // 聖地名の表示
     const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
     holySiteLink.textContent = holySiteName;
 
-    // URLがある場合のみリンクを有効化
     if (item.BlogUrl) {
         holySiteLink.href = item.BlogUrl;
-        holySiteLink.classList.remove('no-link'); // リンク有効スタイル
+        holySiteLink.classList.remove('no-link'); 
     } else {
         holySiteLink.href = 'javascript:void(0)';
-        holySiteLink.classList.add('no-link'); // リンク無効スタイル（黒文字）
+        holySiteLink.classList.add('no-link');
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-    // 表示
     modal.classList.remove('hidden');
 }
 

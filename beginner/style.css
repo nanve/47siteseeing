@@ -369,3 +369,37 @@ body {
     font-size: 0.6rem !important;
     color: #aaa !important;
 }
+/* 属性表示エリアのスタイル */
+.attributes-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2列表示 */
+    gap: 8px;
+    background-color: #f1f8e9; /* 薄い緑（Beginnerテーマ） */
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #c5e1a5;
+}
+
+.attr-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.attr-label {
+    font-size: 0.7rem;
+    color: #558b2f;
+    font-weight: bold;
+}
+
+.attr-value {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: bold;
+}
+/* No.だけ横幅いっぱいにしたければ */
+/* .attr-row:first-child { grid-column: 1 / -1; } */
