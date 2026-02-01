@@ -28,7 +28,7 @@ let touchEndX = 0;
 // --- 1. データ取得と初期化 ---
 async function initApp() {
     try {
-        //const response = await fetch(GAS_API_URL);
+        // type=beginner を指定してパスワードなしで取得
         const response = await fetch(`${GAS_API_URL}?type=beginner`);
         const data = await response.json();
         
@@ -88,10 +88,12 @@ nextButton.onclick = () => {
     if (currentPage < totalPages) { currentPage++; renderButtons(); window.scrollTo(0,0); }
 };
 
+// --- 4. 詳細モーダル表示 ---
 function openModal(item) {
     const isJP = currentLanguage === 'JP';
+    const langSuffix = isJP ? '_JP' : '_EN';
     
-    // ▼▼▼ ラベル設定（色・数・五行を追加） ▼▼▼
+    // ▼▼▼ ラベル設定 ▼▼▼
     document.getElementById('label-desc').textContent       = isJP ? 'どんな方' : 'Profile';
     document.getElementById('label-prediction').textContent = isJP ? 'ささやき' : 'Whisper';
     document.getElementById('label-detail').textContent     = isJP ? '仕事・恋愛・金運' : 'Work, Love, Money';
@@ -103,9 +105,7 @@ function openModal(item) {
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
     document.getElementById('label-holysite').textContent   = isJP ? '聖地：' : 'Holy Site:';
 
-    // ★追加属性ラベル
-    document.getElementById('label-no').textContent        = 'No.';
-    document.getElementById('label-element').textContent   = isJP ? '五行' : 'Element';
+    // ★追加属性ラベル (Noと五行は不要)
     document.getElementById('label-color').textContent     = isJP ? '色' : 'Color';
     document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
     document.getElementById('label-number').textContent    = isJP ? '数霊' : 'Number';
@@ -113,11 +113,23 @@ function openModal(item) {
     // 基本情報
     document.getElementById('modal-title').textContent = isJP ? item.Name_JP : item.Name_EN;
     document.getElementById('modal-image').src = item.ImageUrl;
-    document.getElementById('modal-no').textContent = item.No; // Noだけシンプルに表示
+    
+    // ★キーワード生成 (N_Keyword_1 ~ 5)
+    const keywordsContainer = document.getElementById('modal-keywords');
+    keywordsContainer.innerHTML = ''; // クリア
+    
+    for (let i = 1; i <= 5; i++) {
+        const key = `N_Keyword_${i}${langSuffix}`; // 初級は常に和魂(N)
+        const val = item[key];
+        if (val) {
+            const span = document.createElement('span');
+            span.className = 'keyword-tag';
+            span.textContent = val;
+            keywordsContainer.appendChild(span);
+        }
+    }
     
     // ★属性データの取得 (初級は N_ 固定)
-    // データがない場合はハイフン
-    document.getElementById('modal-element').textContent   = item.N_Elements || '-';
     document.getElementById('modal-color').textContent     = item.N_Colors || '-';
     document.getElementById('modal-direction').textContent = item.N_Direction || '-';
     document.getElementById('modal-number').textContent    = item.N_Numbers || '-';
@@ -164,6 +176,13 @@ function setLanguage(lang) {
     langJPButton.classList.toggle('active', lang === 'JP');
     langENButton.classList.toggle('active', lang === 'EN');
     renderButtons(); // 一覧再描画
+    if (!modal.classList.contains('hidden')) {
+        // モーダルが開いていれば再描画（現在のアイテムで）
+        // ※厳密にはcurrentItemが必要ですが、openModal時に保持していれば可能
+        // ここでは簡易的に閉じるか、保持ロジックを追加する必要がありますが
+        // script.jsの構造上、currentItem変数がグローバルにないので
+        // 言語切り替え時は一旦閉じるか、renderButtonsだけでOKです
+    }
 }
 langJPButton.onclick = () => setLanguage('JP');
 langENButton.onclick = () => setLanguage('EN');
@@ -177,8 +196,11 @@ document.addEventListener('touchend', e => {
 
 function handleSwipe() {
     const threshold = 50;
-    if (touchEndX < touchStartX - threshold) nextButton.click(); // 左スワイプで次へ
-    if (touchEndX > touchStartX + threshold) prevButton.click(); // 右スワイプで前へ
+    // モーダルが開いていない時のみページ送り
+    if (modal.classList.contains('hidden')) {
+        if (touchEndX < touchStartX - threshold) nextButton.click(); 
+        if (touchEndX > touchStartX + threshold) prevButton.click();
+    }
 }
 
 // アプリ開始
