@@ -1,9 +1,10 @@
 // ==========================================
 // ★ここにGASのウェブアプリURLを貼り付けてください
+// (上級と同じ最新のURLであることを確認してください)
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
-// ★中級用の設定
+// ★中級用の設定（ここが 'middle' になっている必要があります）
 const AUTH_TYPE = 'middle';
 
 // 要素の取得
@@ -23,19 +24,19 @@ let allData = [];
 const itemsPerPage = 6;
 let currentPage = 1;
 let currentLanguage = 'JP';
-let currentSpirit = 'N'; // 'N'=和魂, 'A'=荒魂 (初期値は和魂)
-let currentItem = null;  // 現在開いているアイテム
+let currentSpirit = 'N'; // 'N'=和魂, 'A'=荒魂
+let currentItem = null;
 
-// スワイプ用変数
 let touchStartX = 0;
 let touchEndX = 0;
 
 // ▼▼▼ 1. 認証機能 ▼▼▼
 document.addEventListener('DOMContentLoaded', () => {
+    // 以前ログイン済みかチェック
     const savedKey = localStorage.getItem(`site_auth_${AUTH_TYPE}`);
     if (savedKey) {
         document.getElementById('auth-password').value = savedKey;
-        authenticateUser(); 
+        authenticateUser(); // 自動ログイン試行
     }
 });
 
@@ -52,6 +53,7 @@ async function authenticateUser() {
     errorMsg.textContent = "認証中...";
     
     try {
+        // GASにパスワードを送る (type=middle)
         const url = `${GAS_API_URL}?type=${AUTH_TYPE}&key=${encodeURIComponent(inputKey)}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -62,8 +64,9 @@ async function authenticateUser() {
         } else if (data.error) {
             throw new Error(data.error);
         } else {
+            // 成功
             localStorage.setItem(`site_auth_${AUTH_TYPE}`, inputKey);
-            overlay.style.display = 'none'; 
+            overlay.style.display = 'none'; // ロック画面を消す
             allData = data;
             renderButtons(); 
         }
@@ -72,8 +75,9 @@ async function authenticateUser() {
         errorMsg.textContent = "通信エラーが発生しました。";
     }
 }
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-// --- 2. ボタン一覧の描画 (共通) ---
+// --- 2. ボタン一覧の描画 ---
 function renderButtons() {
     buttonGrid.innerHTML = '';
     const start = (currentPage - 1) * itemsPerPage;
@@ -118,7 +122,6 @@ function openModal(item) {
     modal.classList.remove('hidden');
 }
 
-// モーダル内のコンテンツを描画
 function renderModalContent() {
     if (!currentItem) return;
     
@@ -127,7 +130,7 @@ function renderModalContent() {
     const spirit = currentSpirit; // 'N' or 'A'
     const langSuffix = isJP ? '_JP' : '_EN';
 
-    // ▼▼▼ ラベル設定 ▼▼▼
+    // ラベル設定
     document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History';
     document.getElementById('label-prediction').textContent = isJP ? 'ささやき' : 'Whisper';
     document.getElementById('label-detail').textContent     = isJP ? '運勢詳細' : 'Fortune Details';
@@ -136,8 +139,6 @@ function renderModalContent() {
     document.getElementById('label-money').textContent      = isJP ? '金運' : 'Money';
     document.getElementById('label-health').textContent     = isJP ? '健康' : 'Health'; 
     document.getElementById('label-advice').textContent     = isJP ? '示唆の言葉' : 'Advice';
-    
-    // 聖地関連
     document.getElementById('label-location').textContent   = isJP ? '都道府県・御鎮守' : 'Prefecture & Shrine';
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
     document.getElementById('label-holysite').textContent   = isJP ? '御鎮守：' : 'Shrine:';
@@ -149,7 +150,7 @@ function renderModalContent() {
     document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
     document.getElementById('label-number').textContent    = isJP ? '数霊' : 'Number';
 
-    // 和魂/荒魂の説明
+    // スピリット説明
     const spiritDesc = document.getElementById('spirit-desc-text');
     if (spirit === 'N') {
         spiritDesc.textContent = isJP ? '和魂（にぎみたま）：穏やかな働き・調和・平和' : 'Nigi-mitama: Gentle, harmonious spirit.';
@@ -162,12 +163,10 @@ function renderModalContent() {
     document.getElementById('modal-image').src = item.ImageUrl;
     document.getElementById('modal-no').textContent = item.No;
 
-    // ★キーワード生成 (1~5) N/A切り替え
+    // ★キーワード生成
     const keywordsContainer = document.getElementById('modal-keywords');
     keywordsContainer.innerHTML = '';
-    
     for (let i = 1; i <= 5; i++) {
-        // カラム例: N_Keyword_1_JP
         const key = `${spirit}_Keyword_${i}${langSuffix}`;
         const val = item[key];
         if (val) {
@@ -178,9 +177,8 @@ function renderModalContent() {
         }
     }
 
-    // ★属性データ取得 (spirit 変数で N/A 切り替え)
+    // ★属性データ取得
     function getAttr(keySuffix) {
-        // 例: N_Colors (リスト上、_JPがつかないと仮定)
         return item[`${spirit}_${keySuffix}`] || '-';
     }
     document.getElementById('modal-element').textContent   = getAttr('Elements');
@@ -188,36 +186,26 @@ function renderModalContent() {
     document.getElementById('modal-direction').textContent = getAttr('Direction');
     document.getElementById('modal-number').textContent    = getAttr('Numbers');
 
-    // 1. 御由緒
+    // テキスト情報
     document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
-    
-    // 2. ささやき
     const keyGeneral = `M_${spirit}_General_${currentLanguage}`;
     document.getElementById('modal-m-general').textContent = item[keyGeneral] || '-';
     
-    // 3. 詳細
-    const keyWork   = `M_${spirit}_Interp_Work_${currentLanguage}`;
-    const keyLove   = `M_${spirit}_Interp_Love_${currentLanguage}`;
-    const keyMoney  = `M_${spirit}_Interp_Money_${currentLanguage}`;
-    const keyHealth = `M_${spirit}_Interp_Health_${currentLanguage}`;
+    // 詳細
+    document.getElementById('modal-work').textContent   = item[`M_${spirit}_Interp_Work_${currentLanguage}`] || '-';
+    document.getElementById('modal-love').textContent   = item[`M_${spirit}_Interp_Love_${currentLanguage}`] || '-';
+    document.getElementById('modal-money').textContent  = item[`M_${spirit}_Interp_Money_${currentLanguage}`] || '-';
+    document.getElementById('modal-health').textContent = item[`M_${spirit}_Interp_Health_${currentLanguage}`] || '-';
 
-    document.getElementById('modal-work').textContent   = item[keyWork] || '-';
-    document.getElementById('modal-love').textContent   = item[keyLove] || '-';
-    document.getElementById('modal-money').textContent  = item[keyMoney] || '-';
-    document.getElementById('modal-health').textContent = item[keyHealth] || '-';
-
-    // 4. 示唆の言葉
+    // 示唆
     const keyS = `M_${spirit}_S_${currentLanguage}`;
     document.getElementById('modal-m-s').textContent = item[keyS] || '-';
 
-    // 都道府県・御鎮守
-    const prefectureEl = document.getElementById('modal-prefecture');
-    const holySiteLink = document.getElementById('modal-holysite-link');
-
-    prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
+    // 場所
+    document.getElementById('modal-prefecture').textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
     const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
+    const holySiteLink = document.getElementById('modal-holysite-link');
     holySiteLink.textContent = holySiteName;
-
     if (item.BlogUrl) {
         holySiteLink.href = item.BlogUrl;
         holySiteLink.classList.remove('no-link'); 
@@ -238,6 +226,34 @@ window.switchSpirit = (type) => {
 function updateSpiritSwitcherUI() {
     const btnN = document.getElementById('spirit-n');
     const btnA = document.getElementById('spirit-a');
-    
     if (currentSpirit === 'N') {
-        btnN.classList
+        btnN.classList.add('active');
+        btnA.classList.remove('active');
+    } else {
+        btnN.classList.remove('active');
+        btnA.classList.add('active');
+    }
+}
+
+closeButton.onclick = () => modal.classList.add('hidden');
+window.onclick = (e) => { if (e.target === modal) modal.classList.add('hidden'); };
+
+function setLanguage(lang) {
+    currentLanguage = lang;
+    langJPButton.classList.toggle('active', lang === 'JP');
+    langENButton.classList.toggle('active', lang === 'EN');
+    renderButtons();
+    if (!modal.classList.contains('hidden')) renderModalContent();
+}
+langJPButton.onclick = () => setLanguage('JP');
+langENButton.onclick = () => setLanguage('EN');
+
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (modal.classList.contains('hidden')) {
+        const threshold = 50;
+        if (touchEndX < touchStartX - threshold) nextButton.click(); 
+        if (touchEndX > touchStartX + threshold) prevButton.click();
+    }
+});
