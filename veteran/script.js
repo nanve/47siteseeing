@@ -120,7 +120,7 @@ function renderModalContent() {
     const langSuffix = isJP ? '_JP' : '_EN';
 
     // ラベル設定
-    document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History'; // ←ラベル設定も忘れずに
+    document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History';
     document.getElementById('label-attributes').textContent = isJP ? '神性属性データ' : 'Divine Attributes';
     document.getElementById('label-prediction').textContent = isJP ? '神託（General）' : 'Oracle (General)';
     document.getElementById('label-detail').textContent     = isJP ? '詳細解釈' : 'Detailed Interpretation';
@@ -182,7 +182,7 @@ function renderModalContent() {
     document.getElementById('modal-meta-direction').textContent = getMeta(`${spirit}_Direction`);
     document.getElementById('modal-meta-number').textContent    = getMeta(`${spirit}_Numbers`);
 
-    // ★追加: 御由緒 (ここが抜けていました！)
+    // ★★★ 御由緒 (ここが表示処理です！) ★★★
     document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
 
     // 詳細解釈
