@@ -1,52 +1,4 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>47Siteseeing Card (Middle)</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #333; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; box-sizing: border-box;">
-    <h2 style="margin-bottom: 10px;">Member Only</h2>
-    <p style="margin-bottom: 20px; font-size: 0.9rem; color: #ccc;">
-        これより先は会員限定エリアです。<br>購入時に発行されたパスワードを入力してください。
-    </p>
-    <input type="password" id="auth-password" placeholder="Password" style="padding: 10px; border-radius: 5px; border: none; margin-bottom: 15px; width: 80%; max-width: 300px;">
-    <button onclick="authenticateUser()" style="padding: 10px 30px; border-radius: 25px; border: none; background: #fff; color: #333; font-weight: bold; cursor: pointer;">ENTER</button>
-    <p id="auth-error" style="color: #ff6b6b; margin-top: 15px; font-size: 0.8rem; height: 1em;"></p>
-    
-    <a href="../index.html" style="margin-top: 30px; color: #888; text-decoration: none; font-size: 0.8rem;">&lt; Back to Top</a>
-</div>
-
-    <div class="container">
-        <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">47Siteseeing Card</h1>
-                <p class="app-subtitle">Middle Edition</p>
-            </div>
-            
-            <div class="language-switcher">
-                <button id="lang-jp" class="active">JP</button>
-                <button id="lang-en">EN</button>
-            </div>
-        </header>
-
-        <div class="button-grid"></div>
-        
-        <nav class="pagination">
-            <button id="prev-page" disabled>&lt; Prev</button>
-            <span id="page-info"></span>
-            <button id="next-page" disabled>Next &gt;</button>
-        </nav>
-
-        <footer class="app-footer">
-            <p>&copy; 2025 47Siteseeing Card. All Rights Reserved.</p>
-            <p class="copyright-notice">当サイトの画像・文章の無断転載を禁じます。</p>
-        </footer>
-    </div>
-
-    <div id="detail-modal" class="modal hidden">
+<div id="detail-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <div id="modal-body">
@@ -65,15 +17,46 @@
                     <img id="modal-image" src="" alt="">
                 </div>
                 
-                <div class="attributes-grid">
-                    <span id="modal-no" class="tag"></span>
-                    <span id="modal-element" class="tag"></span>
-                    <span id="modal-direction" class="tag"></span>
+                <div class="attributes-box">
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-no">No.</span>
+                        <span class="attr-value" id="modal-no"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-element">五行</span>
+                        <span class="attr-value" id="modal-element"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-color">色</span>
+                        <span class="attr-value" id="modal-color"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-direction">方位</span>
+                        <span class="attr-value" id="modal-direction"></span>
+                    </div>
+                    <div class="attr-row">
+                        <span class="attr-label" id="label-number">数霊</span>
+                        <span class="attr-value" id="modal-number"></span>
+                    </div>
                 </div>
 
                 <div class="section">
-                    <h3 id="label-desc">ご由緒</h3>
+                    <h3 id="label-desc">御由緒</h3>
                     <p id="modal-desc"></p>
+                </div>
+
+                <div class="section link-box" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 25px;">
+                    <h3 id="label-location">都道府県・御鎮守</h3>
+                    <div class="location-container">
+                        <div class="location-item">
+                            <span class="location-label" id="label-prefecture">都道府県：</span>
+                            <span id="modal-prefecture"></span>
+                        </div>
+                        <div class="location-item">
+                            <span class="location-label" id="label-holysite">御鎮守：</span>
+                            <a id="modal-holysite-link" href="" target="_blank" rel="noopener noreferrer"></a>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="section prediction-box">
@@ -83,7 +66,6 @@
 
                 <div class="section detail-box">
                     <h3 id="label-detail">運勢詳細</h3>
-                    
                     <div class="detail-row">
                         <span class="detail-icon">🏢</span>
                         <div class="detail-content">
@@ -91,7 +73,6 @@
                             <p id="modal-work"></p>
                         </div>
                     </div>
-
                     <div class="detail-row">
                         <span class="detail-icon">💖</span>
                         <div class="detail-content">
@@ -99,7 +80,6 @@
                             <p id="modal-love"></p>
                         </div>
                     </div>
-
                     <div class="detail-row">
                         <span class="detail-icon">💰</span>
                         <div class="detail-content">
@@ -107,7 +87,6 @@
                             <p id="modal-money"></p>
                         </div>
                     </div>
-
                     <div class="detail-row">
                         <span class="detail-icon">🏥</span>
                         <div class="detail-content">
@@ -122,23 +101,6 @@
                     <p id="modal-m-s" class="highlight-text"></p>
                 </div>
 
-                <div class="section link-box">
-                    <h3 id="label-location">所在地・聖地</h3>
-                    <div class="location-container">
-                        <div class="location-item">
-                            <span class="location-label" id="label-prefecture">都道府県：</span>
-                            <span id="modal-prefecture"></span>
-                        </div>
-                        <div class="location-item">
-                            <span class="location-label" id="label-holysite">聖地：</span>
-                            <a id="modal-holysite-link" href="" target="_blank" rel="noopener noreferrer"></a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>

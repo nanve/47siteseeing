@@ -142,8 +142,12 @@ function renderModalContent() {
     const isJP = currentLanguage === 'JP';
     const spirit = currentSpirit; // 'N' or 'A'
     
-    // ▼▼▼ ラベル設定 ▼▼▼
-    document.getElementById('label-desc').textContent       = isJP ? 'どんな方' : 'Profile';
+    // 'どんな方' → '御由緒'
+    document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History';
+    // '聖地・所在地' → '都道府県・御鎮守'
+    document.getElementById('label-location').textContent   = isJP ? '都道府県・御鎮守' : 'Prefecture & Shrine';
+    // '聖地：' → '御鎮守：'
+    document.getElementById('label-holysite').textContent   = isJP ? '御鎮守：' : 'Shrine:';
     document.getElementById('label-prediction').textContent = isJP ? 'ささやき' : 'Whisper';
     document.getElementById('label-detail').textContent     = isJP ? '運勢詳細' : 'Fortune Details';
     document.getElementById('label-work').textContent       = isJP ? '仕事' : 'Work';
@@ -152,11 +156,6 @@ function renderModalContent() {
     document.getElementById('label-health').textContent     = isJP ? '健康' : 'Health'; // 中級追加
     document.getElementById('label-advice').textContent     = isJP ? '示唆の言葉' : 'Advice';
     
-    // 聖地関連
-    document.getElementById('label-location').textContent   = isJP ? '聖地・所在地' : 'Holy Site & Location';
-    document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
-    document.getElementById('label-holysite').textContent   = isJP ? '聖地：' : 'Holy Site:';
-
     // 和魂/荒魂の説明文更新
     const spiritDesc = document.getElementById('spirit-desc-text');
     if (spirit === 'N') {

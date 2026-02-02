@@ -227,7 +227,7 @@ body {
 }
 .keyword-tag {
     background-color: #f1f8e9; /* 薄緑 */
-    color: #558b2f; /* 濃い緑 */
+    color: #000; /* kuro */
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.8rem;
