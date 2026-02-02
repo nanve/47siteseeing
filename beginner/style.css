@@ -365,11 +365,6 @@ body {
 }
 
 
-#modal-holysite-link:hover {
-    color: #0056b3;
-    border-bottom: 1px solid #0056b3;
-}
-
 .no-link {
     color: #333 !important;
     pointer-events: none;
