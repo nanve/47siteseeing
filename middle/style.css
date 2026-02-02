@@ -451,3 +451,23 @@ body {
     font-size: 0.6rem !important;
     color: #aaa !important;
 }
+/* ブログボタン (中級オレンジ) */
+.blog-btn {
+    display: inline-block;
+    background-color: #FF9800;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    width: 80%; /* 幅広に */
+    text-align: center;
+}
+.blog-btn:hover {
+    background-color: #F57C00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
