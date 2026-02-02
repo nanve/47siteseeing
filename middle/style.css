@@ -410,19 +410,6 @@ body {
     min-width: 80px;
 }
 
-#modal-holysite-link {
-    color: #FF9800;
-    text-decoration: none;
-    font-weight: bold;
-    border-bottom: 1px solid transparent;
-    transition: all 0.3s ease;
-}
-
-#modal-holysite-link:hover {
-    color: #e65100;
-    border-bottom: 1px solid #e65100;
-}
-
 .no-link {
     color: #333 !important;
     pointer-events: none;

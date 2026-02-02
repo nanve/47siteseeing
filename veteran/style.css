@@ -415,11 +415,7 @@ body {
     margin-right: 5px;
     min-width: 80px;
 }
-#modal-holysite-link {
-    color: #673AB7;
-    text-decoration: none;
-    font-weight: bold;
-}
+
 .no-link { color: #333 !important; pointer-events: none; }
 
 /* ★追加: ブログボタン (上級パープル) */
