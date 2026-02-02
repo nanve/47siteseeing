@@ -451,7 +451,8 @@ body {
     font-size: 0.6rem !important;
     color: #aaa !important;
 }
-/* ブログボタン (中級オレンジ) */
+
+/* ★追加: ブログボタン (中級オレンジ) */
 .blog-btn {
     display: inline-block;
     background-color: #FF9800;

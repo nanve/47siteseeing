@@ -112,23 +112,6 @@ function openModal(item) {
 }
 
 function renderModalContent() {
-    if (item.BlogUrl) {
-        holySiteLink.href = item.BlogUrl;
-        holySiteLink.classList.remove('no-link'); 
-    } else {
-        holySiteLink.href = 'javascript:void(0)';
-        holySiteLink.classList.add('no-link');
-    }
-
-    // ★これを追加：ブログボタンにも同じURLをセット（なければ非表示）
-    const blogBtn = document.getElementById('modal-blog-btn');
-    if (item.BlogUrl) {
-        blogBtn.href = item.BlogUrl;
-        blogBtn.style.display = 'inline-block'; // URLがあれば表示
-    } else {
-        blogBtn.style.display = 'none'; // なければ隠す
-    }
-    
     if (!currentItem) return;
     
     const item = currentItem;
@@ -199,7 +182,7 @@ function renderModalContent() {
     document.getElementById('modal-meta-direction').textContent = getMeta(`${spirit}_Direction`);
     document.getElementById('modal-meta-number').textContent    = getMeta(`${spirit}_Numbers`);
 
-    // ★御由緒の表示 (ここが不足していました)
+    // 御由緒
     document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
 
     // 詳細解釈
@@ -217,7 +200,7 @@ function renderModalContent() {
     document.getElementById('modal-health').textContent    = item[keyHealth] || '-';
     document.getElementById('modal-v-5').textContent       = item[keyCore] || '-';
 
-    // 場所（御鎮守）
+    // 場所
     const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
     prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
@@ -230,6 +213,15 @@ function renderModalContent() {
     } else {
         holySiteLink.href = 'javascript:void(0)';
         holySiteLink.classList.add('no-link');
+    }
+
+    // ★ブログボタンの制御
+    const blogBtn = document.getElementById('modal-blog-btn');
+    if (item.BlogUrl) {
+        blogBtn.href = item.BlogUrl;
+        blogBtn.style.display = 'inline-block';
+    } else {
+        blogBtn.style.display = 'none';
     }
 }
 

@@ -28,6 +28,7 @@ let touchEndX = 0;
 // --- 1. データ取得と初期化 ---
 async function initApp() {
     try {
+        // type=beginner を指定してパスワードなしで取得
         const response = await fetch(`${GAS_API_URL}?type=beginner`);
         const data = await response.json();
         
@@ -82,7 +83,7 @@ function openModal(item) {
     const isJP = currentLanguage === 'JP';
     const langSuffix = isJP ? '_JP' : '_EN';
     
-    // ▼▼▼ ラベル設定（変更箇所） ▼▼▼
+    // ▼▼▼ ラベル設定（変更済み） ▼▼▼
     document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History';
     document.getElementById('label-prediction').textContent = isJP ? 'ささやき' : 'Whisper';
     document.getElementById('label-detail').textContent     = isJP ? '仕事・恋愛・金運' : 'Work, Love, Money';
@@ -171,7 +172,7 @@ function setLanguage(lang) {
     langENButton.classList.toggle('active', lang === 'EN');
     renderButtons();
     if (!modal.classList.contains('hidden')) {
-        // 簡易リロード（本来はcurrentItem保持が必要だが、複雑化回避のため一覧更新のみ）
+        // 必要なら再描画
     }
 }
 langJPButton.onclick = () => setLanguage('JP');

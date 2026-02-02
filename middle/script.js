@@ -1,5 +1,5 @@
 // ==========================================
-// ★GASのURL (最新のもの)
+// ★GASのURL
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
@@ -23,7 +23,7 @@ let allData = [];
 const itemsPerPage = 6;
 let currentPage = 1;
 let currentLanguage = 'JP';
-let currentSpirit = 'N'; 
+let currentSpirit = 'N'; // 'N'=和魂, 'A'=荒魂
 let currentItem = null;
 
 let touchStartX = 0;
@@ -118,28 +118,11 @@ function openModal(item) {
 }
 
 function renderModalContent() {
-    if (item.BlogUrl) {
-        holySiteLink.href = item.BlogUrl;
-        holySiteLink.classList.remove('no-link'); 
-    } else {
-        holySiteLink.href = 'javascript:void(0)';
-        holySiteLink.classList.add('no-link');
-    }
-
-    // ★これを追加：ブログボタンにも同じURLをセット（なければ非表示）
-    const blogBtn = document.getElementById('modal-blog-btn');
-    if (item.BlogUrl) {
-        blogBtn.href = item.BlogUrl;
-        blogBtn.style.display = 'inline-block'; // URLがあれば表示
-    } else {
-        blogBtn.style.display = 'none'; // なければ隠す
-    }
-    
     if (!currentItem) return;
     
     const item = currentItem;
     const isJP = currentLanguage === 'JP';
-    const spirit = currentSpirit; 
+    const spirit = currentSpirit; // 'N' or 'A'
     const langSuffix = isJP ? '_JP' : '_EN';
 
     // ラベル設定
@@ -151,11 +134,13 @@ function renderModalContent() {
     document.getElementById('label-money').textContent      = isJP ? '金運' : 'Money';
     document.getElementById('label-health').textContent     = isJP ? '健康' : 'Health'; 
     document.getElementById('label-advice').textContent     = isJP ? '示唆の言葉' : 'Advice';
+    
+    // 場所ラベル
     document.getElementById('label-location').textContent   = isJP ? '都道府県・御鎮守' : 'Prefecture & Shrine';
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
     document.getElementById('label-holysite').textContent   = isJP ? '御鎮守：' : 'Shrine:';
 
-    // 属性ラベル (No削除)
+    // 属性ラベル
     document.getElementById('label-element').textContent   = isJP ? '五行' : 'Element';
     document.getElementById('label-color').textContent     = isJP ? '色' : 'Color';
     document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
@@ -172,7 +157,6 @@ function renderModalContent() {
     // 基本情報
     document.getElementById('modal-title').textContent = isJP ? item.Name_JP : item.Name_EN;
     document.getElementById('modal-image').src = item.ImageUrl;
-    // document.getElementById('modal-no').textContent = item.No; // ←削除
 
     // キーワード生成
     const keywordsContainer = document.getElementById('modal-keywords');
@@ -188,7 +172,7 @@ function renderModalContent() {
         }
     }
 
-    // 属性データ取得
+    // 属性データ
     function getAttr(keySuffix) {
         return item[`${spirit}_${keySuffix}`] || '-';
     }
@@ -197,8 +181,10 @@ function renderModalContent() {
     document.getElementById('modal-direction').textContent = getAttr('Direction');
     document.getElementById('modal-number').textContent    = getAttr('Numbers');
 
-    // テキスト情報
+    // 御由緒
     document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
+    
+    // ささやき
     const keyGeneral = `M_${spirit}_General_${currentLanguage}`;
     document.getElementById('modal-m-general').textContent = item[keyGeneral] || '-';
     
@@ -212,7 +198,7 @@ function renderModalContent() {
     const keyS = `M_${spirit}_S_${currentLanguage}`;
     document.getElementById('modal-m-s').textContent = item[keyS] || '-';
 
-    // 場所
+    // 場所・リンク
     const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
     prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
@@ -225,6 +211,15 @@ function renderModalContent() {
     } else {
         holySiteLink.href = 'javascript:void(0)';
         holySiteLink.classList.add('no-link');
+    }
+
+    // ★ブログボタンの制御
+    const blogBtn = document.getElementById('modal-blog-btn');
+    if (item.BlogUrl) {
+        blogBtn.href = item.BlogUrl;
+        blogBtn.style.display = 'inline-block';
+    } else {
+        blogBtn.style.display = 'none';
     }
 }
 
