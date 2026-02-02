@@ -1,9 +1,9 @@
 // ==========================================
-// ★GASのURL
+// ★ここにGASのウェブアプリURLを貼り付けてください
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
-// ★上級用設定
+// ★上級用の設定 (ここが 'veteran' になっていることが重要)
 const AUTH_TYPE = 'veteran';
 
 const buttonGrid = document.querySelector('.button-grid');
@@ -15,23 +15,24 @@ const langENButton = document.getElementById('lang-en');
 const modal = document.getElementById('detail-modal');
 const closeButton = document.querySelector('.close-button');
 
-// 設定値
+// 上級用設定
 let allData = [];
 const itemsPerPage = 6;
 let currentPage = 1;
 let currentLanguage = 'JP';
-let currentSpirit = 'N'; 
+let currentSpirit = 'N'; // 'N'=和魂, 'A'=荒魂
 let currentItem = null;
 
 let touchStartX = 0;
 let touchEndX = 0;
 
-// ▼▼▼ 1. 認証機能 ▼▼▼
+// ▼▼▼ 1. 認証機能 (ここを追加しました) ▼▼▼
 document.addEventListener('DOMContentLoaded', () => {
+    // 以前ログイン済みかチェック
     const savedKey = localStorage.getItem(`site_auth_${AUTH_TYPE}`);
     if (savedKey) {
         document.getElementById('auth-password').value = savedKey;
-        authenticateUser(); 
+        authenticateUser(); // 自動ログイン試行
     }
 });
 
@@ -48,6 +49,7 @@ async function authenticateUser() {
     errorMsg.textContent = "認証中...";
     
     try {
+        // GASにパスワードを送る (type=veteran)
         const url = `${GAS_API_URL}?type=${AUTH_TYPE}&key=${encodeURIComponent(inputKey)}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -58,16 +60,19 @@ async function authenticateUser() {
         } else if (data.error) {
             throw new Error(data.error);
         } else {
+            // 成功！
             localStorage.setItem(`site_auth_${AUTH_TYPE}`, inputKey);
-            overlay.style.display = 'none'; 
+            overlay.style.display = 'none'; // ロック画面を消す
+            
             allData = data;
-            renderButtons(); 
+            renderButtons(); // ボタン一覧を描画
         }
     } catch (e) {
         console.error(e);
         errorMsg.textContent = "通信エラーが発生しました。";
     }
 }
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 function renderButtons() {
     buttonGrid.innerHTML = '';
@@ -105,7 +110,7 @@ nextButton.onclick = () => { const totalPages = Math.ceil(allData.length / items
 
 function openModal(item) {
     currentItem = item;
-    currentSpirit = 'N'; 
+    currentSpirit = 'N'; // デフォルトは和魂
     updateSpiritSwitcherUI();
     renderModalContent();
     modal.classList.remove('hidden');
@@ -116,11 +121,10 @@ function renderModalContent() {
     
     const item = currentItem;
     const isJP = currentLanguage === 'JP';
-    const spirit = currentSpirit; 
-    const langSuffix = isJP ? '_JP' : '_EN';
+    const spirit = currentSpirit; // 'N' or 'A'
+    const langSuffix = isJP ? '_JP' : '_EN'; // ex: _JP
 
-    // ラベル設定
-    document.getElementById('label-desc').textContent       = isJP ? '御由緒' : 'History';
+    // --- ラベル設定 (多言語化) ---
     document.getElementById('label-attributes').textContent = isJP ? '神性属性データ' : 'Divine Attributes';
     document.getElementById('label-prediction').textContent = isJP ? '神託（General）' : 'Oracle (General)';
     document.getElementById('label-detail').textContent     = isJP ? '詳細解釈' : 'Detailed Interpretation';
@@ -138,9 +142,9 @@ function renderModalContent() {
     document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
     document.getElementById('label-number').textContent    = isJP ? '数霊' : 'Number';
 
-    document.getElementById('label-location').textContent   = isJP ? '都道府県・御鎮守' : 'Prefecture & Shrine';
+    document.getElementById('label-location').textContent   = isJP ? '聖地・所在地' : 'Holy Site & Location';
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
-    document.getElementById('label-holysite').textContent   = isJP ? '御鎮守：' : 'Shrine:';
+    document.getElementById('label-holysite').textContent   = isJP ? '聖地：' : 'Holy Site:';
 
     // スピリット説明
     const spiritDesc = document.getElementById('spirit-desc-text');
@@ -154,13 +158,13 @@ function renderModalContent() {
     document.getElementById('modal-title').textContent = isJP ? item.Name_JP : item.Name_EN;
     document.getElementById('modal-image').src = item.ImageUrl;
 
-    // キーワード生成
+    // --- ★1. キーワードクラウドの生成 (1~5) ---
     const keywordsContainer = document.getElementById('modal-keywords');
-    keywordsContainer.innerHTML = ''; 
-    keywordsContainer.classList.toggle('ara-mode', spirit === 'A');
+    keywordsContainer.innerHTML = ''; // クリア
+    keywordsContainer.classList.toggle('ara-mode', spirit === 'A'); // 色変え用クラス
 
     for (let i = 1; i <= 5; i++) {
-        const key = `${spirit}_Keyword_${i}${langSuffix}`;
+        const key = `${spirit}_Keyword_${i}${langSuffix}`; // ex: N_Keyword_1_JP
         const val = item[key];
         if (val) {
             const span = document.createElement('span');
@@ -170,11 +174,12 @@ function renderModalContent() {
         }
     }
 
-    // メタデータ
+    // --- ★2. メタデータの表示 ---
     function getMeta(baseKey) {
         if (item[baseKey]) return item[baseKey];
         return '-';
     }
+
     document.getElementById('modal-meta-color').textContent     = getMeta(`${spirit}_Colors`);
     document.getElementById('modal-meta-element').textContent   = getMeta(`${spirit}_Elements`);
     document.getElementById('modal-meta-season').textContent    = getMeta(`${spirit}_Seasons`);
@@ -182,10 +187,8 @@ function renderModalContent() {
     document.getElementById('modal-meta-direction').textContent = getMeta(`${spirit}_Direction`);
     document.getElementById('modal-meta-number').textContent    = getMeta(`${spirit}_Numbers`);
 
-    // ★★★ 御由緒 (ここが表示処理です！) ★★★
-    document.getElementById('modal-desc').textContent = isJP ? item.DeityDesc_JP : item.DeityDesc_EN;
 
-    // 詳細解釈
+    // --- ★3. 詳細解釈 (V_N_... / V_A_...) ---
     const keyGen    = `V_${spirit}_General${langSuffix}`;
     const keyWork   = `V_${spirit}_Interp_Work${langSuffix}`;
     const keyLove   = `V_${spirit}_Interp_Love${langSuffix}`;
@@ -200,9 +203,10 @@ function renderModalContent() {
     document.getElementById('modal-health').textContent    = item[keyHealth] || '-';
     document.getElementById('modal-v-5').textContent       = item[keyCore] || '-';
 
-    // 場所
+    // --- 4. 聖地情報 (共通) ---
     const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
+
     prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
     const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
     holySiteLink.textContent = holySiteName;
@@ -257,3 +261,6 @@ document.addEventListener('touchend', e => {
         if (touchEndX > touchStartX + threshold) prevButton.click();
     }
 });
+
+// ※重要：initAppの自動呼び出しは削除しました
+// document.addEventListener('DOMContentLoaded', initApp); <-- これは不要
