@@ -1,10 +1,9 @@
 // ==========================================
-// ★ここにGASのウェブアプリURLを貼り付けてください
-// (上級と同じ最新のURLであることを確認してください)
+// ★GASのURL (最新のもの)
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz1_u_9EHlQxqVgwEDffCiwqdbFWbNaubS5PgzYGVJr2wdXF817MiHxxra8jYAahFd3_g/exec'; 
 // ==========================================
 
-// ★中級用の設定（ここが 'middle' になっている必要があります）
+// ★中級用設定
 const AUTH_TYPE = 'middle';
 
 // 要素の取得
@@ -24,7 +23,7 @@ let allData = [];
 const itemsPerPage = 6;
 let currentPage = 1;
 let currentLanguage = 'JP';
-let currentSpirit = 'N'; // 'N'=和魂, 'A'=荒魂
+let currentSpirit = 'N'; 
 let currentItem = null;
 
 let touchStartX = 0;
@@ -32,11 +31,10 @@ let touchEndX = 0;
 
 // ▼▼▼ 1. 認証機能 ▼▼▼
 document.addEventListener('DOMContentLoaded', () => {
-    // 以前ログイン済みかチェック
     const savedKey = localStorage.getItem(`site_auth_${AUTH_TYPE}`);
     if (savedKey) {
         document.getElementById('auth-password').value = savedKey;
-        authenticateUser(); // 自動ログイン試行
+        authenticateUser(); 
     }
 });
 
@@ -53,7 +51,6 @@ async function authenticateUser() {
     errorMsg.textContent = "認証中...";
     
     try {
-        // GASにパスワードを送る (type=middle)
         const url = `${GAS_API_URL}?type=${AUTH_TYPE}&key=${encodeURIComponent(inputKey)}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -64,9 +61,8 @@ async function authenticateUser() {
         } else if (data.error) {
             throw new Error(data.error);
         } else {
-            // 成功
             localStorage.setItem(`site_auth_${AUTH_TYPE}`, inputKey);
-            overlay.style.display = 'none'; // ロック画面を消す
+            overlay.style.display = 'none'; 
             allData = data;
             renderButtons(); 
         }
@@ -75,7 +71,6 @@ async function authenticateUser() {
         errorMsg.textContent = "通信エラーが発生しました。";
     }
 }
-// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 // --- 2. ボタン一覧の描画 ---
 function renderButtons() {
@@ -127,7 +122,7 @@ function renderModalContent() {
     
     const item = currentItem;
     const isJP = currentLanguage === 'JP';
-    const spirit = currentSpirit; // 'N' or 'A'
+    const spirit = currentSpirit; 
     const langSuffix = isJP ? '_JP' : '_EN';
 
     // ラベル設定
@@ -143,8 +138,7 @@ function renderModalContent() {
     document.getElementById('label-prefecture').textContent = isJP ? '都道府県：' : 'Prefecture:';
     document.getElementById('label-holysite').textContent   = isJP ? '御鎮守：' : 'Shrine:';
 
-    // 属性ラベル
-    document.getElementById('label-no').textContent        = 'No.';
+    // 属性ラベル (No削除)
     document.getElementById('label-element').textContent   = isJP ? '五行' : 'Element';
     document.getElementById('label-color').textContent     = isJP ? '色' : 'Color';
     document.getElementById('label-direction').textContent = isJP ? '方位' : 'Direction';
@@ -161,9 +155,9 @@ function renderModalContent() {
     // 基本情報
     document.getElementById('modal-title').textContent = isJP ? item.Name_JP : item.Name_EN;
     document.getElementById('modal-image').src = item.ImageUrl;
-    document.getElementById('modal-no').textContent = item.No;
+    // document.getElementById('modal-no').textContent = item.No; // ←削除
 
-    // ★キーワード生成
+    // キーワード生成
     const keywordsContainer = document.getElementById('modal-keywords');
     keywordsContainer.innerHTML = '';
     for (let i = 1; i <= 5; i++) {
@@ -177,7 +171,7 @@ function renderModalContent() {
         }
     }
 
-    // ★属性データ取得
+    // 属性データ取得
     function getAttr(keySuffix) {
         return item[`${spirit}_${keySuffix}`] || '-';
     }
@@ -202,10 +196,12 @@ function renderModalContent() {
     document.getElementById('modal-m-s').textContent = item[keyS] || '-';
 
     // 場所
-    document.getElementById('modal-prefecture').textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
-    const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
+    const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
+    prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
+    const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
     holySiteLink.textContent = holySiteName;
+
     if (item.BlogUrl) {
         holySiteLink.href = item.BlogUrl;
         holySiteLink.classList.remove('no-link'); 
@@ -215,7 +211,6 @@ function renderModalContent() {
     }
 }
 
-// 和魂/荒魂の切り替え
 window.switchSpirit = (type) => {
     if (currentSpirit === type) return;
     currentSpirit = type;
