@@ -136,20 +136,15 @@ function openModal(item) {
 
     document.getElementById('modal-b-cdn').textContent = isJP ? item.B_CDN_JP : item.B_CDN_EN;
 
-    // 場所・リンク
+// 場所・リンク
     const prefectureEl = document.getElementById('modal-prefecture');
     const holySiteLink = document.getElementById('modal-holysite-link');
+    
     prefectureEl.textContent = (isJP ? item.Prefecture_JP : item.Prefecture_EN) || '-';
-    const holySiteName = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
-    holySiteLink.textContent = holySiteName;
-
-    if (item.BlogUrl) {
-        holySiteLink.href = item.BlogUrl;
-        holySiteLink.classList.remove('no-link'); 
-    } else {
-        holySiteLink.href = 'javascript:void(0)';
-        holySiteLink.classList.add('no-link');
-    }
+    
+    // 御鎮守の名前だけセットする（リンク設定は削除）
+    holySiteLink.textContent = (isJP ? item.Holysite_JP : item.Holysite_EN) || '-';
+    
 
     // ★ブログボタンの制御
     const blogBtn = document.getElementById('modal-blog-btn');
