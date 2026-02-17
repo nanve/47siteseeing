@@ -7,19 +7,31 @@
     <style>
         body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
-        .main-card { background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .main-card { background: white; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; border: 1px solid #e0e0e0; }
         
-        /* 履歴リストのスタイル */
+        h3 { margin-top: 0; color: #2d5a27; font-size: 1.2rem; }
+        .btn-checkin { background: linear-gradient(135deg, #ff5722 0%, #d84315 100%); color: white; border: none; padding: 16px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); width: 100%; }
+        .btn-checkin:active { transform: translateY(2px); box-shadow: none; }
+        
+        #status-message { font-size: 0.85rem; margin-top: 15px; min-height: 1.2em; color: #666; }
+
+        /* 履歴セクション */
         .history-section { margin-top: 30px; }
-        .history-title { font-size: 1.1rem; border-left: 4px solid #ff5722; padding-left: 10px; margin-bottom: 15px; }
-        .log-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .log-icon { width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; border: 1px solid #eee; }
-        .log-info { flex-grow: 1; }
-        .log-shrine { font-weight: bold; font-size: 0.95rem; display: block; }
-        .log-date { font-size: 0.75rem; color: #999; }
-        .log-message { font-size: 0.85rem; color: #555; margin-top: 5px; font-style: italic; background: #fff9f0; padding: 4px 8px; border-radius: 4px; }
+        .history-title { font-size: 1.1rem; border-left: 5px solid #ff5722; padding-left: 12px; margin-bottom: 20px; font-weight: bold; }
         
-        .btn-checkin { background: linear-gradient(135deg, #ff5722 0%, #d84315 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1rem; cursor: pointer; }
+        .log-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: all 0.5s ease; border: 1px solid #f0f0f0; }
+        .log-icon { width: 65px; height: 65px; border-radius: 50%; margin-right: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .log-info { flex-grow: 1; padding-right: 25px; }
+        .log-shrine { font-weight: bold; font-size: 1rem; display: block; color: #333; }
+        .log-date { font-size: 0.75rem; color: #999; margin-top: 2px; display: block; }
+        .log-message { font-size: 0.85rem; color: #555; margin-top: 8px; font-style: italic; background: #fff9f0; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #ffd180; }
+        
+        /* 削除ボタン */
+        .btn-delete { position: absolute; top: 8px; right: 10px; border: none; background: rgba(0,0,0,0.03); color: #bbb; font-size: 1.4rem; line-height: 1; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: color 0.2s; }
+        .btn-delete:hover { color: #ff5722; background: rgba(0,0,0,0.05); }
+
+        /* アニメーション */
+        .fade-out { opacity: 0; transform: translateX(30px); }
     </style>
 </head>
 <body>
@@ -28,7 +40,7 @@
     <div class="main-card">
         <h3>聖地巡礼チェックイン</h3>
         <button class="btn-checkin" onclick="attemptCheckIn()">今ここにいることを報告する</button>
-        <p id="status-message" style="font-size: 0.8rem; margin-top: 10px;">境内でボタンを押してください</p>
+        <div id="status-message">境内の本殿近くでボタンを押してください</div>
     </div>
 
     <div class="history-section">
@@ -39,6 +51,7 @@
 </div>
 
 <script>
+    // ★重要：デプロイしたGASのURLに差し替えてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx25DqGvrVtFuGCxaqkyR3HJZxIncrxbuRQOPfo7ityzhR3goSgNk9h9ekSEXI7pMWA/exec";
 
     window.onload = () => {
@@ -48,6 +61,12 @@
     async function attemptCheckIn() {
         const status = document.getElementById('status-message');
         status.innerText = "位置情報を確認中...";
+        status.style.color = "#333";
+
+        if (!navigator.geolocation) {
+            status.innerText = "お使いのブラウザは位置情報に対応していません。";
+            return;
+        }
 
         navigator.geolocation.getCurrentPosition(async (position) => {
             const lat = position.coords.latitude;
@@ -58,61 +77,53 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // 神様からのランダムメッセージ（テスト用：本来はGASから返しても良い）
-                    const messages = ["良い縁が結ばれました", "開拓の時です", "神秘的な力が宿っています", "一歩前へ進みましょう"];
+                    // 神様からのメッセージ（将来的にGAS側から取得も可能）
+                    const messages = ["良い縁が結ばれました", "開拓の時です", "神秘的な力が宿っています", "一歩前へ進みましょう", "心安らかな日々が続きます"];
                     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
 
                     saveVisit(result.shrineName, result.iconUrl, randomMsg);
-                    status.innerText = "参拝を記録しました！";
+                    status.innerText = "【参拝成功】ご縁を記録しました！";
+                    status.style.color = "#2d5a27";
                 } else {
-                    status.innerText = "範囲外です。本殿の近くで再度お試しください。";
+                    status.innerText = "登録エリア外です。もう少し近づいてみてください。";
+                    status.style.color = "#d84315";
                 }
             } catch (e) {
                 status.innerText = "通信エラーが発生しました。";
+                status.style.color = "red";
             }
-        });
+        }, (err) => {
+            status.innerText = "位置情報の利用を許可してください。";
+            status.style.color = "red";
+        }, { enableHighAccuracy: true, timeout: 10000 });
     }
 
     function saveVisit(shrineName, iconUrl, message) {
         let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
         const now = new Date();
-        const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+        const dateStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
         
         history.unshift({ shrineName, iconUrl, message, date: dateStr });
-        // 最新10件まで保持
-        if(history.length > 10) history.pop();
+        if(history.length > 20) history.pop(); // 最大20件保持
         
         localStorage.setItem('shrine_history', JSON.stringify(history));
         renderHistory();
     }
 
-function renderHistory() {
+    function renderHistory() {
         const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
         const listContainer = document.getElementById('history-list');
         
         if (history.length === 0) {
-            listContainer.innerHTML = '<p style="font-size: 0.8rem; color:#999; text-align:center;">まだ参拝記録がありません。</p>';
+            listContainer.innerHTML = '<p style="font-size: 0.9rem; color:#999; text-align:center; margin-top:20px;">まだ参拝記録がありません。</p>';
             return;
         }
 
         listContainer.innerHTML = history.map((item, index) => `
-            <div class="log-card" style="position: relative; overflow: hidden;">
-                <button onclick="deleteLog(${index})" style="
-                    position: absolute; 
-                    top: 10px; 
-                    right: 10px; 
-                    border: none; 
-                    background: rgba(0,0,0,0.05); 
-                    color: #888; 
-                    font-size: 1.2rem; 
-                    line-height: 1; 
-                    padding: 5px 10px; 
-                    border-radius: 5px; 
-                    cursor: pointer;
-                    z-index: 10;">×</button>
-                
+            <div class="log-card">
+                <button class="btn-delete" onclick="deleteLog(${index})" title="削除">×</button>
                 <img src="${item.iconUrl}" class="log-icon" alt="神様">
-                <div class="log-info" style="padding-right: 20px;">
+                <div class="log-info">
                     <span class="log-shrine">${item.shrineName}</span>
                     <span class="log-date">${item.date} 参拝</span>
                     <div class="log-message">「${item.message}」</div>
@@ -121,15 +132,19 @@ function renderHistory() {
         `).join('');
     }
 
-    // 削除実行関数
     function deleteLog(index) {
         if (!confirm("この参拝記録を削除しますか？")) return;
         
-        let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
-        history.splice(index, 1); // 指定したインデックスのデータを削除
-        localStorage.setItem('shrine_history', JSON.stringify(history));
-        
-        renderHistory(); // 再描画
+        const logCards = document.querySelectorAll('.log-card');
+        const targetCard = logCards[index];
+        targetCard.classList.add('fade-out');
+
+        setTimeout(() => {
+            let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+            history.splice(index, 1);
+            localStorage.setItem('shrine_history', JSON.stringify(history));
+            renderHistory();
+        }, 500);
     }
 </script>
 
