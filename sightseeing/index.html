@@ -111,26 +111,32 @@
     }
 
     function renderHistory() {
-        const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
-        const listContainer = document.getElementById('history-list');
-        
-        if (history.length === 0) {
-            listContainer.innerHTML = '<p style="font-size: 0.9rem; color:#999; text-align:center; margin-top:20px;">まだ参拝記録がありません。</p>';
-            return;
-        }
+            const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+            const listContainer = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                listContainer.innerHTML = '<p style="font-size: 0.9rem; color:#999; text-align:center;">記録がありません。</p>';
+                return;
+            }
 
-        listContainer.innerHTML = history.map((item, index) => `
-            <div class="log-card">
-                <button class="btn-delete" onclick="deleteLog(${index})" title="削除">×</button>
-                <img src="${item.iconUrl}" class="log-icon" alt="神様">
-                <div class="log-info">
-                    <span class="log-shrine">${item.shrineName}</span>
-                    <span class="log-date">${item.date} 参拝</span>
-                    <div class="log-message">「${item.message}」</div>
+            listContainer.innerHTML = history.map((item, index) => `
+                <div class="log-card">
+                    <button class="btn-delete" onclick="deleteLog(${index})">×</button>
+                    
+                    <img src="${item.iconUrl}" class="log-icon" style="cursor:pointer;" 
+                        onclick="alert('【${item.shrineName}の神様】\\n${item.message}')" alt="神様">
+                    
+                    <div class="log-info">
+                        <span class="log-shrine" style="cursor:pointer; color:#1a73e8; text-decoration:underline;" 
+                            onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.shrineName)}')">
+                            ${item.shrineName}
+                        </span>
+                        <span class="log-date">${item.date} 参拝</span>
+                        <div class="log-message">「${item.message}」</div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
     function deleteLog(index) {
         if (!confirm("この参拝記録を削除しますか？")) return;
