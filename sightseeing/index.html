@@ -95,8 +95,10 @@
             return;
         }
 
-        listContainer.innerHTML = history.map(item => `
-            <div class="log-card">
+        listContainer.innerHTML = history.map((item, index) => `
+            <div class="log-card" style="position: relative;">
+                <button onclick="deleteLog(${index})" style="position: absolute; top: 5px; right: 10px; border: none; background: none; color: #ccc; cursor: pointer;">×</button>
+                
                 <img src="${item.iconUrl}" class="log-icon" alt="神様">
                 <div class="log-info">
                     <span class="log-shrine">${item.shrineName}</span>
@@ -105,6 +107,17 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    // 削除実行関数
+    function deleteLog(index) {
+        if (!confirm("この参拝記録を削除しますか？")) return;
+        
+        let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+        history.splice(index, 1); // 指定したインデックスのデータを削除
+        localStorage.setItem('shrine_history', JSON.stringify(history));
+        
+        renderHistory(); // 再描画
     }
 </script>
 
