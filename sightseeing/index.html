@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>47Siteseeing - 参拝スタンプテスト</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; text-align: center; background-color: #f4f7f4; color: #333; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.2rem; color: #2d5a27; margin-bottom: 20px; }
+        #stamp-slot { width: 150px; height: 150px; margin: 20px auto; border: 3px dashed #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        #stamp-image { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .btn-checkin { background-color: #4CAF50; color: white; border: none; padding: 15px 30px; font-size: 1rem; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-checkin:active { transform: translateY(2px); box-shadow: none; }
+        #status-message { margin-top: 20px; font-size: 0.9rem; min-height: 3em; line-height: 1.5; }
+        .log-area { margin-top: 30px; text-align: left; font-size: 0.8rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>聖地巡礼スタンプ</h1>
+    
+    <div id="stamp-slot">
+        <img id="stamp-image" src="" alt="参拝スタンプ">
+        <span id="placeholder">未参拝</span>
+    </div>
+
+    <button class="btn-checkin" onclick="attemptCheckIn()">今ここにいることを<br>神様に報告する</button>
+
+    <div id="status-message">ボタンを押すと、近くの神社を探します。</div>
+
+    <div class="log-area">
+        <strong>参拝の軌跡:</strong>
+        <ul id="visit-history"></ul>
+    </div>
+</div>
+
+<script>
+    // --- 設定（あなたのGASのURLに書き換えてください） ---
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL"; 
+
+    // ローカルストレージから履歴を読み込み表示
+    window.onload = () => {
+        updateHistoryDisplay();
+    };
+
+    function attemptCheckIn() {
+        const status = document.getElementById('status-message');
+        status.innerText = "位置情報を確認中...";
+        status.style.color = "#333";
+
+        // 1-Shotの位置情報取得
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // GASへデータを送信（SiteListとの照合・人気エリア集計用）
+                checkWithServer(lat, lng);
+            },
+            (error) => {
+                status.innerText = "位置情報の許可が必要です。\nブラウザの設定を確認してください。";
+                status.style.color = "red";
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
+    async function checkWithServer(lat, lng) {
+        const status = document.getElementById('status-message');
+        
+        try {
+            // GAS経由でスプレッドシートのSiteListと照合
+            // テスト段階ではURLパラメータで送信
+            const response = await fetch(`${GAS_URL}?lat=${lat}&lng=${lng}&action=checkin`);
+            const result = await response.json();
+
+            if (result.success) {
+                // 成功：スタンプを表示して保存
+                showStamp(result.shrineName, result.iconUrl);
+                saveVisit(result.shrineName, result.siteId);
+                status.innerText = `【参拝成功】\n${result.shrineName} にてご縁が結ばれました。`;
+                status.style.color = "#2d5a27";
+            } else {
+                // 失敗：範囲外
+                status.innerText = "近くに登録された神社が見つかりませんでした。";
+            }
+        } catch (e) {
+            status.innerText = "通信エラーが発生しました。後ほどお試しください。";
+            console.error(e);
+        }
+    }
+
+    function showStamp(name, iconUrl) {
+        document.getElementById('placeholder').style.display = 'none';
+        const img = document.getElementById('stamp-image');
+        img.src = iconUrl;
+        img.style.display = 'block';
+    }
+
+    function saveVisit(name, id) {
+        let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+        
+        history.unshift({ name, id, date: timestamp });
+        localStorage.setItem('shrine_history', JSON.stringify(history));
+        updateHistoryDisplay();
+    }
+
+    function updateHistoryDisplay() {
+        const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+        const list = document.getElementById('visit-history');
+        list.innerHTML = history.slice(0, 5).map(item => `<li>${item.date}: ${item.name}</li>`).join('');
+    }
+</script>
+
+</body>
+</html>
