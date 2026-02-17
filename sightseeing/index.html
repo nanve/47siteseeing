@@ -129,25 +129,30 @@
         renderHistory();
     }
 
-    function renderHistory() {
-        const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
-        const listContainer = document.getElementById('history-list');
-        if (history.length === 0) {
-            listContainer.innerHTML = '<p style="text-align:center; color:#999;">まだ参拝記録がありません。</p>';
-            return;
-        }
-        listContainer.innerHTML = history.map((item, index) => `
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+    const listContainer = document.getElementById('history-list');
+    if (history.length === 0) {
+        listContainer.innerHTML = '<p style="text-align:center; color:#999;">まだ参拝記録がありません。</p>';
+        return;
+    }
+    listContainer.innerHTML = history.map((item, index) => {
+        // 安全にGoogleマップのURLを生成
+        const mapUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(item.shrineName);
+        
+        return `
             <div class="log-card">
                 <button class="btn-delete" onclick="deleteLog(${index})">×</button>
                 <img src="${item.iconUrl}" class="log-icon" onclick="openDetailModal('${item.shrineName}', '${item.message}', '${item.iconUrl}')">
                 <div class="log-info">
-                    <span class="log-shrine" onclick="window.open('http://googleusercontent.com/maps.google.com/6{encodeURIComponent(item.shrineName)}')">${item.shrineName}</span>
+                    <span class="log-shrine" onclick="window.open('${mapUrl}')">${item.shrineName}</span>
                     <span class="log-date">${item.date} 参拝</span>
                     <div class="log-message">「${item.message}」</div>
                 </div>
             </div>
-        `).join('');
-    }
+        `;
+    }).join('');
+}
 
     function openDetailModal(title, message, iconUrl) {
         const inner = document.getElementById('modal-inner');
