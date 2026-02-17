@@ -20,17 +20,21 @@
         .history-title { font-size: 1.1rem; border-left: 5px solid #ff5722; padding-left: 12px; margin-bottom: 20px; font-weight: bold; }
         
         .log-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: all 0.5s ease; border: 1px solid #f0f0f0; }
-        .log-icon { width: 65px; height: 65px; border-radius: 50%; margin-right: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .log-icon { width: 65px; height: 65px; border-radius: 50%; margin-right: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
         .log-info { flex-grow: 1; padding-right: 25px; }
-        .log-shrine { font-weight: bold; font-size: 1rem; display: block; color: #333; }
+        .log-shrine { font-weight: bold; font-size: 1rem; display: block; color: #1a73e8; text-decoration: underline; cursor: pointer; }
         .log-date { font-size: 0.75rem; color: #999; margin-top: 2px; display: block; }
         .log-message { font-size: 0.85rem; color: #555; margin-top: 8px; font-style: italic; background: #fff9f0; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #ffd180; }
         
         /* 削除ボタン */
-        .btn-delete { position: absolute; top: 8px; right: 10px; border: none; background: rgba(0,0,0,0.03); color: #bbb; font-size: 1.4rem; line-height: 1; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: color 0.2s; }
-        .btn-delete:hover { color: #ff5722; background: rgba(0,0,0,0.05); }
+        .btn-delete { position: absolute; top: 8px; right: 10px; border: none; background: rgba(0,0,0,0.03); color: #bbb; font-size: 1.4rem; line-height: 1; padding: 4px 8px; border-radius: 6px; cursor: pointer; z-index: 10; }
 
-        /* アニメーション */
+        /* カスタムモーダル */
+        #custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center; }
+        .modal-content { background:#fffaf0; padding:30px; border-radius:20px; width:85%; max-width:350px; text-align:center; border:2px solid #ffd180; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .modal-btn { background:#ff5722; color:white; border:none; padding:12px 35px; border-radius:30px; cursor:pointer; margin-top:20px; font-weight:bold; }
+
+        /* アニメーション用 */
         .fade-out { opacity: 0; transform: translateX(30px); }
     </style>
 </head>
@@ -45,13 +49,23 @@
 
     <div class="history-section">
         <div class="history-title">参拝ご縁帳</div>
-        <div id="history-list">
-            </div>
+        <div id="history-list"></div>
+    </div>
+</div>
+
+<div id="custom-modal">
+    <div class="modal-content">
+        <h4 id="modal-title" style="margin:0; color:#d84315; font-size:1.1rem;"></h4>
+        <div id="modal-image-container" style="margin:15px 0;">
+            <img id="modal-icon" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+        </div>
+        <p id="modal-body" style="margin:10px 0 20px; line-height:1.6; color:#333; font-size:0.95rem;"></p>
+        <button class="modal-btn" onclick="closeModal()">閉じる</button>
     </div>
 </div>
 
 <script>
-    // ★重要：デプロイしたGASのURLに差し替えてください
+    // ★重要：ご自身のGAS URLに差し替えてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx25DqGvrVtFuGCxaqkyR3HJZxIncrxbuRQOPfo7ityzhR3goSgNk9h9ekSEXI7pMWA/exec";
 
     window.onload = () => {
@@ -61,10 +75,9 @@
     async function attemptCheckIn() {
         const status = document.getElementById('status-message');
         status.innerText = "位置情報を確認中...";
-        status.style.color = "#333";
-
+        
         if (!navigator.geolocation) {
-            status.innerText = "お使いのブラウザは位置情報に対応していません。";
+            status.innerText = "位置情報に対応していません。";
             return;
         }
 
@@ -77,24 +90,19 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // 神様からのメッセージ（将来的にGAS側から取得も可能）
                     const messages = ["良い縁が結ばれました", "開拓の時です", "神秘的な力が宿っています", "一歩前へ進みましょう", "心安らかな日々が続きます"];
                     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
 
                     saveVisit(result.shrineName, result.iconUrl, randomMsg);
-                    status.innerText = "【参拝成功】ご縁を記録しました！";
-                    status.style.color = "#2d5a27";
+                    status.innerText = "【参拝成功】記録しました！";
                 } else {
-                    status.innerText = "登録エリア外です。もう少し近づいてみてください。";
-                    status.style.color = "#d84315";
+                    status.innerText = "登録エリア外です。";
                 }
             } catch (e) {
                 status.innerText = "通信エラーが発生しました。";
-                status.style.color = "red";
             }
         }, (err) => {
-            status.innerText = "位置情報の利用を許可してください。";
-            status.style.color = "red";
+            status.innerText = "位置情報を許可してください。";
         }, { enableHighAccuracy: true, timeout: 10000 });
     }
 
@@ -104,47 +112,51 @@
         const dateStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
         
         history.unshift({ shrineName, iconUrl, message, date: dateStr });
-        if(history.length > 20) history.pop(); // 最大20件保持
+        if(history.length > 20) history.pop();
         
         localStorage.setItem('shrine_history', JSON.stringify(history));
         renderHistory();
     }
 
     function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
-            const listContainer = document.getElementById('history-list');
-            
-            if (history.length === 0) {
-                listContainer.innerHTML = '<p style="font-size: 0.9rem; color:#999; text-align:center;">記録がありません。</p>';
-                return;
-            }
-
-            listContainer.innerHTML = history.map((item, index) => `
-                <div class="log-card">
-                    <button class="btn-delete" onclick="deleteLog(${index})">×</button>
-                    
-                    <img src="${item.iconUrl}" class="log-icon" style="cursor:pointer;" 
-                        onclick="alert('【${item.shrineName}の神様】\\n${item.message}')" alt="神様">
-                    
-                    <div class="log-info">
-                        <span class="log-shrine" style="cursor:pointer; color:#1a73e8; text-decoration:underline;" 
-                            onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.shrineName)}')">
-                            ${item.shrineName}
-                        </span>
-                        <span class="log-date">${item.date} 参拝</span>
-                        <div class="log-message">「${item.message}」</div>
-                    </div>
-                </div>
-            `).join('');
+        const history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
+        const listContainer = document.getElementById('history-list');
+        
+        if (history.length === 0) {
+            listContainer.innerHTML = '<p style="font-size: 0.9rem; color:#999; text-align:center; margin-top:20px;">まだ参拝記録がありません。</p>';
+            return;
         }
+
+        listContainer.innerHTML = history.map((item, index) => `
+            <div class="log-card">
+                <button class="btn-delete" onclick="deleteLog(${index})">×</button>
+                <img src="${item.iconUrl}" class="log-icon" onclick="openModal('${item.shrineName}', '${item.message}', '${item.iconUrl}')" alt="神様">
+                <div class="log-info">
+                    <span class="log-shrine" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.shrineName)}')">
+                        ${item.shrineName}
+                    </span>
+                    <span class="log-date">${item.date} 参拝</span>
+                    <div class="log-message">「${item.message}」</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openModal(title, message, iconUrl) {
+        document.getElementById('modal-title').innerText = `【${title}】`;
+        document.getElementById('modal-icon').src = iconUrl;
+        document.getElementById('modal-body').innerText = message;
+        document.getElementById('custom-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('custom-modal').style.display = 'none';
+    }
 
     function deleteLog(index) {
         if (!confirm("この参拝記録を削除しますか？")) return;
-        
         const logCards = document.querySelectorAll('.log-card');
-        const targetCard = logCards[index];
-        targetCard.classList.add('fade-out');
-
+        logCards[index].classList.add('fade-out');
         setTimeout(() => {
             let history = JSON.parse(localStorage.getItem('shrine_history') || "[]");
             history.splice(index, 1);
